@@ -8,6 +8,7 @@ const getAllUser =(req,res)=>{
    
 const addUser =async(req,res)=>{
 try {
+    console.log("register testing")
         const userData =req.body
         const saltRounds=10
         let hashedPassword =await bcrypt.hash(userData.password,saltRounds)
@@ -46,6 +47,7 @@ try {
 
 
 const loginUser = async (req,res)=>{
+    console.log("login testing")
     
     try {
         let loginUser =req.body
@@ -60,28 +62,36 @@ const loginUser = async (req,res)=>{
                 let token = jwt.sign({
                     _id:userData._id,
                     role:userData.role,
-                    
                 },'secret',{expiresIn :60*60})
-                
+                    
+            
+                console.log("user Info", userData)
                 let messageData ={
                     message:"login successfull",
                     status:200,
-                    data:{token}
+                    data:{token, role:userData.role,email:userData.email,username:userData.userName}
+                    
                 }
                 res.status(200).send(messageData)
             }        
-        }else{
-            res.send("Invalid credentials")
+        else{
+            res.status(201).send("Invalid credentials")
+        } 
+    }
+        else{
+          res.status(201).send("User does not exist")
+
         }
-        
-    } catch (error) {
+    }
+     
+  catch (error) {
         
         let messageData ={
             message:error.message,
             status:404,
             error:error
         }
-        console.log(messageData)
+         res.status(404).send(messageData)
     }
 }
 
